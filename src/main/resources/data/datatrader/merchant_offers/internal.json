@@ -1,0 +1,24 @@
+{
+  "Recipes": [
+    {
+      "buy": {
+        "item": "minecraft:diamond",
+        "Count": 3
+      },
+      "buyB": {
+        "item": "minecraft:wooden_pickaxe"
+      },
+      "sell": {
+        "item": "minecraft:diamond_pickaxe",
+        "nbt": "{Damage:0,Enchantments:[{id:\"minecraft:efficiency\",lvl:2},{id:\"minecraft:unbreaking\", lvl:10}]}"
+      },
+      "uses": 10,
+      "maxUses": 50,
+      "rewardExp": false,
+      "xp": 0,
+      "priceMultiplier": 0.0,
+      "specialPrice": 0,
+      "demand": 0
+    }
+  ]
+}

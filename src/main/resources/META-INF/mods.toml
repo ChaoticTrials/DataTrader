@@ -1,0 +1,37 @@
+modLoader="javafml"
+loaderVersion="[41,)"
+license="The Apache License, Version 2.0"
+issueTrackerURL="https://www.github.com/MelanX/DataTrader/issues/"
+
+[[mods]]
+modId="datatrader"
+version="${file.jarVersion}"
+displayName="DataTrader"
+displayTest="MATCH_VERSION"
+displayURL="www.curseforge.com/members/melanx/"
+updateJSONURL="https://assets.melanx.de/updates/data-trader.json"
+authors="MelanX"
+description="""
+Adds a trader to the game which can be customized by datapacks.
+"""
+
+[[dependencies.datatrader]]
+    modId="forge"
+    mandatory=true
+    versionRange="[41.0.110,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.datatrader]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19, 1.20)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.datatrader]]
+    modId="libx"
+    mandatory=true
+    versionRange="[1.19-4.0.7,)"
+    ordering="NONE"
+    side="BOTH"

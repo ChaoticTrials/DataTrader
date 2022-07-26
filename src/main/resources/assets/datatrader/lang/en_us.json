@@ -1,0 +1,8 @@
+{
+  "entity.datatrader.data_trader.datatrader.trader": "Trader",
+  "item.datatrader.trader_spawn_egg": "Trader Spawn Egg",
+
+  "command.datatrader.setoffer.wrong_entity": "Wrong entity type, only works for traders.",
+  "command.datatrader.setoffer.wrong_id": "This offer id doesn't exist.",
+  "command.datatrader.setoffer.success": "Successfully set trader offer id to %s"
+}
