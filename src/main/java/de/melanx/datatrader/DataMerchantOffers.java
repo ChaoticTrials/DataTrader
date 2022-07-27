@@ -85,7 +85,11 @@ public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
                 costB = ItemStack.EMPTY;
             }
             ItemStack result = CraftingHelper.getItemStack(recipe.get("sell").getAsJsonObject(), true);
-            int uses = recipe.get("uses").getAsInt();
+            int uses = 0;
+            if (recipe.has("uses")) {
+                uses = recipe.get("uses").getAsInt();
+            }
+
             int maxUses = 4;
             if (recipe.has("maxUses")) {
                 maxUses = recipe.get("maxUses").getAsInt();
