@@ -2,10 +2,9 @@ package de.melanx.datatrader;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -14,14 +13,43 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.storage.loot.Deserializers;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import org.moddingx.libx.codec.MoreCodecs;
+import org.moddingx.libx.datapack.DataLoader;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
 
+    public static final Codec<MerchantOffer> MERCHANT_OFFER_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    MoreCodecs.SAFE_ITEM_STACK.fieldOf("buy").forGetter(MerchantOffer::getBaseCostA),
+                    MoreCodecs.SAFE_ITEM_STACK.fieldOf("buyB").orElse(ItemStack.EMPTY).forGetter(MerchantOffer::getCostB),
+                    MoreCodecs.SAFE_ITEM_STACK.fieldOf("sell").forGetter(MerchantOffer::getResult),
+                    Codec.INT.fieldOf("uses").orElse(0).forGetter(MerchantOffer::getUses),
+                    Codec.INT.fieldOf("maxUses").orElse(4).forGetter(MerchantOffer::getMaxUses),
+                    Codec.BOOL.fieldOf("rewardExp").orElse(false).forGetter(MerchantOffer::shouldRewardExp),
+                    Codec.INT.fieldOf("xp").orElse(0).forGetter(MerchantOffer::getXp),
+                    Codec.FLOAT.fieldOf("priceMultiplier").orElse(0.0f).forGetter(MerchantOffer::getPriceMultiplier),
+                    Codec.INT.fieldOf("specialPrice").orElse(0).forGetter(MerchantOffer::getSpecialPriceDiff),
+                    Codec.INT.fieldOf("demand").orElse(0).forGetter(MerchantOffer::getDemand)
+            ).apply(instance, (baseCostA, costB, result, uses, maxUses, rewardExp, xp, priceMultiplier, specialPrice, demand) -> {
+                MerchantOffer offer = new MerchantOffer(baseCostA, costB, result, uses, maxUses, xp, priceMultiplier, demand);
+                offer.rewardExp = rewardExp;
+                offer.specialPriceDiff = specialPrice;
+                return offer;
+            }));
+    public static final Codec<MerchantOffers> MERCHANT_OFFERS_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    MERCHANT_OFFER_CODEC.listOf().fieldOf("Recipes").forGetter(offers -> offers.stream().toList())
+            ).apply(instance, recipes -> {
+                MerchantOffers offers = new MerchantOffers();
+                offers.addAll(recipes);
+                return offers;
+            })
+    );
     private static final Gson GSON = Deserializers.createLootTableSerializer().create();
     private Map<ResourceLocation, MerchantOffers> offers = ImmutableMap.of();
 
@@ -31,14 +59,11 @@ public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(@Nonnull Map<ResourceLocation, JsonElement> object, @Nonnull ResourceManager resourceManager, @Nonnull ProfilerFiller profiler) {
-        ImmutableMap.Builder<ResourceLocation, MerchantOffers> builder = ImmutableMap.builder();
-
-        object.forEach((location, json) -> {
-            MerchantOffers offers = this.loadMerchantOffers(json);
-            builder.put(location, offers);
-        });
-
-        this.offers = builder.build();
+        try {
+            this.offers = DataLoader.loadJson(resourceManager, "merchant_offers", MERCHANT_OFFERS_CODEC);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public MerchantOffers getForId(ResourceLocation location) {
@@ -47,108 +72,5 @@ public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
 
     public Set<ResourceLocation> getIds() {
         return this.offers.keySet();
-    }
-
-    public static JsonObject serialize(MerchantOffers offers) {
-        JsonArray recipes = new JsonArray();
-        for (MerchantOffer offer : offers) {
-            JsonObject offerObj = new JsonObject();
-            offerObj.add("buy", serializeItem(offer.getBaseCostA()));
-            offerObj.add("buyB", serializeItem(offer.getCostB()));
-            offerObj.add("sell", serializeItem(offer.getResult()));
-            offerObj.addProperty("uses", offer.getUses());
-            offerObj.addProperty("maxUses", offer.getMaxUses());
-            offerObj.addProperty("rewardExp", offer.shouldRewardExp());
-            offerObj.addProperty("xp", offer.getXp());
-            offerObj.addProperty("priceMultiplier", offer.getPriceMultiplier());
-            offerObj.addProperty("specialPrice", offer.getSpecialPriceDiff());
-            offerObj.addProperty("demand", offer.getDemand());
-            recipes.add(offerObj);
-        }
-
-        JsonObject json = new JsonObject();
-        json.add("Recipes", recipes);
-
-        return json;
-    }
-
-    private MerchantOffers loadMerchantOffers(JsonElement json) {
-        MerchantOffers offers = new MerchantOffers();
-        JsonArray recipes = json.getAsJsonObject().getAsJsonArray("Recipes");
-        for (JsonElement r : recipes) {
-            JsonObject recipe = r.getAsJsonObject();
-            ItemStack baseCostA = CraftingHelper.getItemStack(recipe.get("buy").getAsJsonObject(), true);
-            ItemStack costB;
-            if (recipe.has("buyB")) {
-                costB = CraftingHelper.getItemStack(recipe.get("buyB").getAsJsonObject(), true);
-            } else {
-                costB = ItemStack.EMPTY;
-            }
-            ItemStack result = CraftingHelper.getItemStack(recipe.get("sell").getAsJsonObject(), true);
-            int uses = 0;
-            if (recipe.has("uses")) {
-                uses = recipe.get("uses").getAsInt();
-            }
-
-            int maxUses = 4;
-            if (recipe.has("maxUses")) {
-                maxUses = recipe.get("maxUses").getAsInt();
-            }
-
-            boolean rewardExp = false;
-            if (recipe.has("rewardExp")) {
-                rewardExp = recipe.get("rewardExp").getAsBoolean();
-            }
-
-            int xp = 0;
-            if (recipe.has("xp")) {
-                xp = recipe.get("xp").getAsInt();
-            }
-
-            float priceMultiplier = 0.0f;
-            if (recipe.has("priceMultiplier")) {
-                priceMultiplier = recipe.get("priceMultiplier").getAsFloat();
-            }
-
-            int specialPrice = 0;
-            if (recipe.has("specialPrice")) {
-                specialPrice = recipe.get("specialPrice").getAsInt();
-            }
-
-            int demand = 0;
-            if (recipe.has("demand")) {
-                demand = recipe.get("demand").getAsInt();
-            }
-
-            MerchantOffer offer = new MerchantOffer(baseCostA, costB, result, uses, maxUses, xp, priceMultiplier, demand);
-            offer.rewardExp = rewardExp;
-            offer.specialPriceDiff = specialPrice;
-            offers.add(offer);
-        }
-
-        return offers;
-    }
-
-    public static JsonObject serializeItem(ItemStack stack) {
-        JsonObject json = new JsonObject();
-        CompoundTag tag = stack.serializeNBT();
-        json.addProperty("item", tag.getString("id"));
-
-        int count = tag.getInt("Count");
-        if (count > 1) {
-            json.addProperty("count", count);
-        }
-
-        if (tag.contains("tag")) {
-            //noinspection ConstantConditions
-            json.addProperty("nbt", tag.get("tag").toString());
-        }
-
-        if (tag.contains("ForgeCaps")) {
-            //noinspection ConstantConditions
-            json.addProperty("ForgeCaps", tag.get("ForgeCaps").toString());
-        }
-
-        return json;
     }
 }

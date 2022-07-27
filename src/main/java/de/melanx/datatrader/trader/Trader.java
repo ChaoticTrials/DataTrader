@@ -142,10 +142,6 @@ public class Trader extends Villager {
                 this.level.broadcastEntityEvent(this, EntityEvent.VILLAGER_SWEAT);
             }
         }
-
-        if (this.getVillagerData().getProfession() == VillagerProfession.NONE && this.isTrading()) {
-//            this.stopTrading();
-        }
     }
 
     // [Vanilla copy]

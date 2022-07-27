@@ -13,7 +13,7 @@ file could look like this:
     {
       "buy": {
         "item": "minecraft:diamond",
-        "Count": 3
+        "count": 3
       },
       "buyB": {
         "item": "minecraft:wooden_pickaxe"

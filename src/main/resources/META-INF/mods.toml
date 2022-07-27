@@ -18,7 +18,7 @@ Adds a trader to the game which can be customized by datapacks.
 [[dependencies.datatrader]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.110,)"
+    versionRange="[41.1,)"
     ordering="NONE"
     side="BOTH"
 
