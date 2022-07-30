@@ -173,6 +173,7 @@ public class Trader extends Villager {
         return spawnGroupData;
     }
 
+
     @Override
     protected void defineSynchedData() {
         this.entityData.define(DATA_LIVING_ENTITY_FLAGS, (byte) 0);
@@ -204,6 +205,10 @@ public class Trader extends Villager {
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
+        if (tag.contains("Offers")) {
+            tag.remove("Offers");
+        }
+
         if (this.offerId != null) {
             tag.putString("OfferId", this.offerId.toString());
         }
@@ -211,6 +216,10 @@ public class Trader extends Villager {
 
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
+        if (tag.contains("Offers")) { // TODO remove in next major update
+            tag.remove("Offers");
+        }
+
         super.readAdditionalSaveData(tag);
         try {
             this.offerId = new ResourceLocation(tag.getString("OfferId"));
