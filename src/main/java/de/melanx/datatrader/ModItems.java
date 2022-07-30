@@ -5,6 +5,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @RegisterClass(registry = "ITEMS")
 public class ModItems {
 
-    public static final Item traderSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.dataTrader, 0xEF6231, 0xBD8B72, new Item.Properties()) {
+    public static final Item traderSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.dataTrader, 0xEF6231, 0xBD8B72, new Item.Properties().tab(CreativeModeTab.TAB_MISC)) {
 
         @Nonnull
         @Override
