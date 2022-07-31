@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.noeppi_noeppi.libx.codec.MoreCodecs;
+import io.github.noeppi_noeppi.libx.datapack.DataLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -13,8 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.storage.loot.Deserializers;
-import org.moddingx.libx.codec.MoreCodecs;
-import org.moddingx.libx.datapack.DataLoader;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

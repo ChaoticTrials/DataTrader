@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import de.melanx.datatrader.DataTrader;
-import de.melanx.datatrader.ModEntities;
-import de.melanx.datatrader.ModEntityDataSerializers;
-import de.melanx.datatrader.ModProfessions;
+import de.melanx.datatrader.ModRegistration;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -25,7 +23,7 @@ import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -44,7 +42,7 @@ import java.util.Optional;
 
 public class Trader extends Villager {
 
-    private static final EntityDataAccessor<ResourceLocation> DATA_MERCHANT_OFFERS_ID = SynchedEntityData.defineId(Trader.class, ModEntityDataSerializers.resourceLocation);
+    private static final EntityDataAccessor<ResourceLocation> DATA_MERCHANT_OFFERS_ID = SynchedEntityData.defineId(Trader.class, ModRegistration.resourceLocation);
     private ResourceLocation offerId;
 
     public Trader(EntityType<? extends Villager> entityType, Level level) {
@@ -52,7 +50,7 @@ public class Trader extends Villager {
     }
 
     public static void registerAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.dataTrader, Villager.createAttributes().build());
+        event.put(ModRegistration.dataTrader, Villager.createAttributes().build());
     }
 
     public static ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getCorePackage(VillagerProfession profession, float speedModifier) {
@@ -65,17 +63,17 @@ public class Trader extends Villager {
                 Pair.of(0, new WakeUp()),
                 Pair.of(0, new ReactToBell()),
                 Pair.of(0, new SetRaidStatus()),
-                Pair.of(0, new ValidateNearbyPoi(profession.heldJobSite(), MemoryModuleType.JOB_SITE)),
-                Pair.of(0, new ValidateNearbyPoi(profession.acquirableJobSite(), MemoryModuleType.POTENTIAL_JOB_SITE)),
+                Pair.of(0, new ValidateNearbyPoi(profession.getJobPoiType(), MemoryModuleType.JOB_SITE)),
+                Pair.of(0, new ValidateNearbyPoi(profession.getJobPoiType(), MemoryModuleType.POTENTIAL_JOB_SITE)),
                 Pair.of(1, new MoveToTargetSink()),
                 Pair.of(2, new PoiCompetitorScan(profession)),
                 Pair.of(3, new LookAndFollowTradingPlayerSink(speedModifier)),
                 Pair.of(5, new GoToWantedItem(speedModifier, false, 4)),
-                Pair.of(6, new AcquirePoi(profession.acquirableJobSite(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
+                Pair.of(6, new AcquirePoi(profession.getJobPoiType(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
                 Pair.of(7, new GoToPotentialJobSite(speedModifier)),
                 Pair.of(8, new YieldJobSite(speedModifier)),
-                Pair.of(10, new AcquirePoi(poiType -> poiType.is(PoiTypes.HOME), MemoryModuleType.HOME, false, Optional.of((byte) 14))),
-                Pair.of(10, new AcquirePoi(poiType -> poiType.is(PoiTypes.MEETING), MemoryModuleType.MEETING_POINT, true, Optional.of((byte) 14))),
+                Pair.of(10, new AcquirePoi(PoiType.HOME, MemoryModuleType.HOME, false, Optional.of((byte) 14))),
+                Pair.of(10, new AcquirePoi(PoiType.MEETING, MemoryModuleType.MEETING_POINT, true, Optional.of((byte) 14))),
                 Pair.of(10, new AssignProfessionFromJobSite())
         );
     }
@@ -169,7 +167,7 @@ public class Trader extends Villager {
     @Override
     public SpawnGroupData finalizeSpawn(@Nonnull ServerLevelAccessor level, @Nonnull DifficultyInstance difficulty, @Nonnull MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag) {
         SpawnGroupData spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
-        this.setVillagerData(this.getVillagerData().setProfession(ModProfessions.trader).setLevel(10));
+        this.setVillagerData(this.getVillagerData().setProfession(ModRegistration.trader).setLevel(10));
         return spawnGroupData;
     }
 
@@ -186,7 +184,7 @@ public class Trader extends Villager {
         this.entityData.define(DATA_MOB_FLAGS_ID, (byte) 0);
         this.entityData.define(DATA_BABY_ID, false);
         this.entityData.define(DATA_UNHAPPY_COUNTER, 0);
-        this.entityData.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, ModProfessions.trader, 10));
+        this.entityData.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, ModRegistration.trader, 10));
         this.entityData.define(DATA_MERCHANT_OFFERS_ID, DataTrader.getInstance().resource("internal"));
     }
 

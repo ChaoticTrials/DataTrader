@@ -11,7 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -38,18 +38,18 @@ public class SetOfferCommand {
     private static int setOffer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "entity");
         if (!(entity instanceof Trader trader)) {
-            context.getSource().sendFailure(Component.translatable("command.datatrader.setoffer.wrong_entity"));
+            context.getSource().sendFailure(new TranslatableComponent("command.datatrader.setoffer.wrong_entity"));
             return 0;
         }
 
         ResourceLocation offerId = ResourceLocationArgument.getId(context, "offerId");
         if (!DataTrader.getInstance().getOffers().getIds().contains(offerId)) {
-            context.getSource().sendFailure(Component.translatable("command.datatrader.setoffer.wrong_id"));
+            context.getSource().sendFailure(new TranslatableComponent("command.datatrader.setoffer.wrong_id"));
             return 0;
         }
 
         trader.setOfferId(offerId);
-        context.getSource().sendSuccess(Component.translatable("command.datatrader.setoffer.success", offerId), true);
+        context.getSource().sendSuccess(new TranslatableComponent("command.datatrader.setoffer.success", offerId), true);
         return 1;
     }
 }
