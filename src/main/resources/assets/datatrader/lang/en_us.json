@@ -2,6 +2,7 @@
   "entity.datatrader.data_trader": "Trader",
   "entity.datatrader.data_trader.datatrader.trader": "Trader",
   "entity.minecraft.data_trader.datatrader.trader": "Trader",
+  "entity.minecraft.villager.datatrader.trader": "Trader",
   "item.datatrader.trader_spawn_egg": "Trader Spawn Egg",
 
   "command.datatrader.setoffer.wrong_entity": "Wrong entity type, only works for traders.",
