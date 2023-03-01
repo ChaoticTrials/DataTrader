@@ -3,8 +3,8 @@
 [![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_650573_all.svg)](https://www.curseforge.com/minecraft/mc-mods/data-trader)
 [![CurseForge](http://cf.way2muchnoise.eu/full_650573_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/data-trader)
 
-[![Modrinth](https://modrinth-utils.vercel.app/api/badge/versions?id=No1xZeN1&logo=true)](https://modrinth.com/mod/data-trader)
-[![Modrinth](https://modrinth-utils.vercel.app/api/badge/downloads?id=No1xZeN1&logo=true)](https://modrinth.com/mod/data-trader)
+[![Modrinth](https://img.shields.io/modrinth/game-versions/No1xZeN1?color=00AF5C&label=modrinth&logo=modrinth)](https://modrinth.com/mod/data-trader)
+[![Modrinth](https://img.shields.io/modrinth/dt/No1xZeN1?color=00AF5C&logo=modrinth)](https://modrinth.com/mod/data-trader)
 
 A mod which adds a new trader to the game.
 
