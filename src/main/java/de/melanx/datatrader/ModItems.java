@@ -1,15 +1,12 @@
 package de.melanx.datatrader;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,19 +23,7 @@ import java.util.Optional;
 @RegisterClass(registry = "ITEMS")
 public class ModItems {
 
-    public static final Item traderSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.dataTrader, 0xEF6231, 0xBD8B72, new Item.Properties().tab(CreativeModeTab.TAB_MISC)) {
-
-        @Override
-        public void fillItemCategory(@Nonnull CreativeModeTab tab, @Nonnull NonNullList<ItemStack> items) {
-            if (this.allowedIn(tab)) {
-                ItemStack egg = new ItemStack(this);
-                ItemStack noAi = egg.copy();
-                CompoundTag entityTag = noAi.getOrCreateTagElement("EntityTag");
-                entityTag.putBoolean("NoAI", true);
-                items.add(egg);
-                items.add(noAi);
-            }
-        }
+    public static final Item traderSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.dataTrader, 0xEF6231, 0xBD8B72, new Item.Properties()) {
 
         @Override
         public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components, @Nonnull TooltipFlag flag) {

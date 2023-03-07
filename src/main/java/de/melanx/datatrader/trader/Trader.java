@@ -55,28 +55,28 @@ public class Trader extends Villager {
         event.put(ModEntities.dataTrader, Villager.createAttributes().build());
     }
 
-    public static ImmutableList<Pair<Integer, ? extends Behavior<? super Villager>>> getCorePackage(VillagerProfession profession, float speedModifier) {
-        //noinspection rawtypes
+    public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> getCorePackage(VillagerProfession profession, float speedModifier) {
         return ImmutableList.of(
                 Pair.of(0, new Swim(0.8F)),
-                Pair.of(0, new InteractWithDoor()),
+                Pair.of(0, InteractWithDoor.create()),
                 Pair.of(0, new LookAtTargetSink(45, 90)),
                 Pair.of(0, new VillagerPanicTrigger()),
-                Pair.of(0, new WakeUp()),
-                Pair.of(0, new ReactToBell()),
-                Pair.of(0, new SetRaidStatus()),
-                Pair.of(0, new ValidateNearbyPoi(profession.heldJobSite(), MemoryModuleType.JOB_SITE)),
-                Pair.of(0, new ValidateNearbyPoi(profession.acquirableJobSite(), MemoryModuleType.POTENTIAL_JOB_SITE)),
+                Pair.of(0, WakeUp.create()),
+                Pair.of(0, ReactToBell.create()),
+                Pair.of(0, SetRaidStatus.create()),
+                Pair.of(0, ValidateNearbyPoi.create(profession.heldJobSite(), MemoryModuleType.JOB_SITE)),
+                Pair.of(0, ValidateNearbyPoi.create(profession.acquirableJobSite(), MemoryModuleType.POTENTIAL_JOB_SITE)),
                 Pair.of(1, new MoveToTargetSink()),
-                Pair.of(2, new PoiCompetitorScan(profession)),
+                Pair.of(2, PoiCompetitorScan.create()),
                 Pair.of(3, new LookAndFollowTradingPlayerSink(speedModifier)),
-                Pair.of(5, new GoToWantedItem(speedModifier, false, 4)),
-                Pair.of(6, new AcquirePoi(profession.acquirableJobSite(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
+                Pair.of(5, GoToWantedItem.create(speedModifier, false, 4)),
+                Pair.of(6, AcquirePoi.create(profession.acquirableJobSite(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
                 Pair.of(7, new GoToPotentialJobSite(speedModifier)),
-                Pair.of(8, new YieldJobSite(speedModifier)),
-                Pair.of(10, new AcquirePoi(poiType -> poiType.is(PoiTypes.HOME), MemoryModuleType.HOME, false, Optional.of((byte) 14))),
-                Pair.of(10, new AcquirePoi(poiType -> poiType.is(PoiTypes.MEETING), MemoryModuleType.MEETING_POINT, true, Optional.of((byte) 14))),
-                Pair.of(10, new AssignProfessionFromJobSite())
+                Pair.of(8, YieldJobSite.create(speedModifier)),
+                Pair.of(10, AcquirePoi.create(poiType -> poiType.is(PoiTypes.HOME), MemoryModuleType.HOME, false, Optional.of((byte) 14))),
+                Pair.of(10, AcquirePoi.create(poiType -> poiType.is(PoiTypes.MEETING), MemoryModuleType.MEETING_POINT, true, Optional.of((byte) 14))),
+                Pair.of(10, AssignProfessionFromJobSite.create())
+                // remove ResetProfession
         );
     }
 
