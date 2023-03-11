@@ -26,6 +26,8 @@ public final class DataTrader extends ModXRegistration {
         this.offers = new DataMerchantOffers();
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.EVENT_BUS.addListener(SetOfferCommand::onRegisterCommands);
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(EventHandler::addToTab);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Trader::registerAttributes);
     }
 

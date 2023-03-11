@@ -10,7 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class EventHandler {
 
     @SubscribeEvent
-    public void addToTab(CreativeModeTabEvent.BuildContents event) {
+    public static void addToTab(CreativeModeTabEvent.BuildContents event) {
         if (event.getTab() == CreativeModeTabs.SPAWN_EGGS) {
             ItemStack egg = new ItemStack(ModItems.traderSpawnEgg);
             ItemStack noAi = egg.copy();
