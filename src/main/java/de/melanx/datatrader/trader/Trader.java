@@ -10,6 +10,7 @@ import de.melanx.datatrader.ModProfessions;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -44,6 +45,7 @@ import java.util.Optional;
 
 public class Trader extends Villager {
 
+    private static final EntityDataAccessor<VillagerData> DATA_VILLAGER_DATA = SynchedEntityData.defineId(Trader.class, EntityDataSerializers.VILLAGER_DATA);
     private static final EntityDataAccessor<ResourceLocation> DATA_MERCHANT_OFFERS_ID = SynchedEntityData.defineId(Trader.class, ModEntityDataSerializers.resourceLocation);
     private ResourceLocation offerId;
 
@@ -173,19 +175,34 @@ public class Trader extends Villager {
         return spawnGroupData;
     }
 
+    public void setVillagerData(VillagerData data) {
+        VillagerData villagerdata = this.getVillagerData();
+        if (villagerdata.getProfession() != data.getProfession()) {
+            this.offers = null;
+        }
+
+        this.entityData.set(DATA_VILLAGER_DATA, data);
+    }
+
+    @Nonnull
+    @Override
+    public VillagerData getVillagerData() {
+        return this.entityData.get(DATA_VILLAGER_DATA);
+    }
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(DATA_LIVING_ENTITY_FLAGS, (byte) 0);
-        this.entityData.define(DATA_EFFECT_COLOR_ID, 0);
-        this.entityData.define(DATA_EFFECT_AMBIENCE_ID, false);
-        this.entityData.define(DATA_ARROW_COUNT_ID, 0);
-        this.entityData.define(DATA_STINGER_COUNT_ID, 0);
-        this.entityData.define(DATA_HEALTH_ID, 1.0F);
-        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
-        this.entityData.define(DATA_MOB_FLAGS_ID, (byte) 0);
-        this.entityData.define(DATA_BABY_ID, false);
-        this.entityData.define(DATA_UNHAPPY_COUNTER, 0);
+        super.defineSynchedData();
+//        this.entityData.define(DATA_LIVING_ENTITY_FLAGS, (byte) 0);
+//        this.entityData.define(DATA_EFFECT_COLOR_ID, 0);
+//        this.entityData.define(DATA_EFFECT_AMBIENCE_ID, false);
+//        this.entityData.define(DATA_ARROW_COUNT_ID, 0);
+//        this.entityData.define(DATA_STINGER_COUNT_ID, 0);
+//        this.entityData.define(DATA_HEALTH_ID, 1.0F);
+//        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
+//        this.entityData.define(DATA_MOB_FLAGS_ID, (byte) 0);
+//        this.entityData.define(DATA_BABY_ID, false);
+//        this.entityData.define(DATA_UNHAPPY_COUNTER, 0);
         this.entityData.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, ModProfessions.trader, 10));
         this.entityData.define(DATA_MERCHANT_OFFERS_ID, DataTrader.getInstance().resource("internal"));
     }
