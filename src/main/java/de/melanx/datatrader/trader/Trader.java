@@ -116,9 +116,9 @@ public class Trader extends Villager {
 
     @Override
     protected void customServerAiStep() {
-        this.level.getProfiler().push("villagerBrain");
-        this.getBrain().tick((ServerLevel) this.level, this);
-        this.level.getProfiler().pop();
+        this.level().getProfiler().push("villagerBrain");
+        this.getBrain().tick((ServerLevel) this.level(), this);
+        this.level().getProfiler().pop();
 
         if (!this.isTrading() && this.updateMerchantTimer > 0) {
             --this.updateMerchantTimer;
@@ -132,16 +132,16 @@ public class Trader extends Villager {
             }
         }
 
-        if (this.lastTradedPlayer != null && this.level instanceof ServerLevel) {
-            ((ServerLevel) this.level).onReputationEvent(ReputationEventType.TRADE, this.lastTradedPlayer, this);
-            this.level.broadcastEntityEvent(this, EntityEvent.VILLAGER_HAPPY);
+        if (this.lastTradedPlayer != null && this.level() instanceof ServerLevel) {
+            ((ServerLevel) this.level()).onReputationEvent(ReputationEventType.TRADE, this.lastTradedPlayer, this);
+            this.level().broadcastEntityEvent(this, EntityEvent.VILLAGER_HAPPY);
             this.lastTradedPlayer = null;
         }
 
         if (!this.isNoAi() && this.random.nextInt(100) == 0) {
-            Raid raid = ((ServerLevel) this.level).getRaidAt(this.blockPosition());
+            Raid raid = ((ServerLevel) this.level()).getRaidAt(this.blockPosition());
             if (raid != null && raid.isActive() && !raid.isOver()) {
-                this.level.broadcastEntityEvent(this, EntityEvent.VILLAGER_SWEAT);
+                this.level().broadcastEntityEvent(this, EntityEvent.VILLAGER_SWEAT);
             }
         }
     }
@@ -164,7 +164,7 @@ public class Trader extends Villager {
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.setActiveActivityIfPossible(Activity.IDLE);
-        brain.updateActivityFromSchedule(this.level.getDayTime(), this.level.getGameTime());
+        brain.updateActivityFromSchedule(this.level().getDayTime(), this.level().getGameTime());
     }
 
     @Nullable

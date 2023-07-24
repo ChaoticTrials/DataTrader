@@ -1,6 +1,7 @@
 package de.melanx.datatrader;
 
 import de.melanx.datatrader.commands.SetOfferCommand;
+import de.melanx.datatrader.data.ItemModels;
 import de.melanx.datatrader.trader.Trader;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
@@ -9,6 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.moddingx.libx.datagen.DatagenSystem;
 import org.moddingx.libx.mod.ModXRegistration;
 import org.moddingx.libx.registration.RegistrationBuilder;
 import org.slf4j.Logger;
@@ -29,16 +31,20 @@ public final class DataTrader extends ModXRegistration {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(EventHandler::addToTab);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Trader::registerAttributes);
+
+        DatagenSystem.create(this, system -> {
+            system.addDataProvider(ItemModels::new);
+        });
     }
 
     @Override
     protected void initRegistration(RegistrationBuilder builder) {
-
+        // NO-OP
     }
 
     @Override
     protected void setup(FMLCommonSetupEvent event) {
-
+        // NO-OP
     }
 
     @Override
