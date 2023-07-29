@@ -1,6 +1,6 @@
 package de.melanx.datatrader;
 
-import de.melanx.datatrader.commands.SetOfferCommand;
+import de.melanx.datatrader.commands.DataTraderCommands;
 import de.melanx.datatrader.data.ItemModels;
 import de.melanx.datatrader.trader.Trader;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -27,7 +27,7 @@ public final class DataTrader extends ModXRegistration {
         instance = this;
         this.offers = new DataMerchantOffers();
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        MinecraftForge.EVENT_BUS.addListener(SetOfferCommand::onRegisterCommands);
+        MinecraftForge.EVENT_BUS.addListener(DataTraderCommands::onRegisterCommands);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(EventHandler::addToTab);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Trader::registerAttributes);
