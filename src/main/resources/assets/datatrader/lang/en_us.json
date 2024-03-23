@@ -1,11 +1,18 @@
 {
-  "entity.datatrader.data_trader": "Trader",
-  "entity.datatrader.data_trader.datatrader.trader": "Trader",
-  "entity.minecraft.data_trader.datatrader.trader": "Trader",
-  "entity.minecraft.villager.datatrader.trader": "Trader",
-  "item.datatrader.trader_spawn_egg": "Trader Spawn Egg",
+  "entity.datatrader.data_trader": "Legacy Trader",
+  "entity.datatrader.data_trader.datatrader.trader": "Legacy Trader",
+  "entity.minecraft.data_trader.datatrader.trader": "Legacy Trader",
+  "entity.minecraft.villager.datatrader.trader": "Legacy Trader",
+
+  "entity.datatrader.new_data_trader": "Trader",
+  "entity.datatrader.new_data_trader.datatrader.trader": "Trader",
+
+  "item.datatrader.trader_spawn_egg": "Legacy Trader Spawn Egg",
+  "item.datatrader.new_trader_spawn_egg": "Trader Spawn Egg",
 
   "command.datatrader.setoffer.wrong_entity": "Wrong entity type, only works for traders.",
   "command.datatrader.setoffer.wrong_id": "This offer id doesn't exist.",
-  "command.datatrader.setoffer.success": "Successfully set trader offer id to %s"
+  "command.datatrader.setoffer.success": "Successfully set trader offer id to %s",
+
+  "tooltip.datatrader.legacy": "You should use the new trader"
 }

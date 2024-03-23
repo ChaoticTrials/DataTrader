@@ -1,0 +1,19 @@
+{
+  "Offers": [
+    {
+      "buy": {
+        "tag": "forge:gems/diamond",
+        "count": 3
+      },
+      "buyB": {
+        "item": "minecraft:wooden_pickaxe"
+      },
+      "sell": {
+        "item": "minecraft:diamond_pickaxe",
+        "nbt": "{Damage:0,Enchantments:[{id:\"minecraft:efficiency\",lvl:2},{id:\"minecraft:unbreaking\", lvl:10}]}"
+      },
+      "rewardExp": false,
+      "xp": 0
+    }
+  ]
+}

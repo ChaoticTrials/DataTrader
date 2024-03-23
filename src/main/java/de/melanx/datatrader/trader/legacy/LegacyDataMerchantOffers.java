@@ -1,4 +1,4 @@
-package de.melanx.datatrader;
+package de.melanx.datatrader.trader.legacy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
+public class LegacyDataMerchantOffers extends SimpleJsonResourceReloadListener {
 
     public static final Codec<MerchantOffer> MERCHANT_OFFER_CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
@@ -53,7 +53,7 @@ public class DataMerchantOffers extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = Deserializers.createLootTableSerializer().create();
     private Map<ResourceLocation, MerchantOffers> offers = ImmutableMap.of();
 
-    public DataMerchantOffers() {
+    public LegacyDataMerchantOffers() {
         super(GSON, "merchant_offers");
     }
 

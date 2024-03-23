@@ -38,7 +38,7 @@ public class SummonCommand {
         }
 
         ServerLevel level = context.getSource().getLevel();
-        Trader trader = ModEntities.dataTrader.create(level);
+        Trader trader = ModEntities.newDataTrader.create(level);
         //noinspection DataFlowIssue
         trader.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos.x, pos.y, pos.z)), MobSpawnType.BREEDING, null, null);
         trader.moveTo(pos.x, pos.y, pos.z, 330, 0);
