@@ -128,6 +128,11 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         return super.mobInteract(player, hand);
     }
 
+    @Override
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        return false;
+    }
+
     @SuppressWarnings("deprecation")
     @Nullable
     @Override
