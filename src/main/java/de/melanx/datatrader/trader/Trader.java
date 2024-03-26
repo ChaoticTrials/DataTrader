@@ -56,6 +56,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         }
 
         this.entityData.set(DATA_TRADER_OFFERS_ID, location);
+        this.updateTrades();
     }
 
     public ResourceLocation getOfferId() {
