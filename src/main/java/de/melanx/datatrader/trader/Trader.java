@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import de.melanx.datatrader.*;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
@@ -181,7 +180,8 @@ public class Trader extends PathfinderMob implements Npc, Trade {
             return super.mobInteract(player, hand);
         }
 
-        OptionalInt optInt = player.openMenu(new SimpleMenuProvider((id, inv, player1) -> new TraderMenu(id, inv, this), Component.literal("Test"))); // todo
+        //noinspection DataFlowIssue
+        OptionalInt optInt = player.openMenu(new SimpleMenuProvider((id, inv, player1) -> new TraderMenu(id, inv, this), this.hasCustomName() ? this.getCustomName() : this.getDisplayName()));
         if (optInt.isPresent()) {
             TraderOffers offers = this.getOffers();
             if (!offers.isEmpty()) {
