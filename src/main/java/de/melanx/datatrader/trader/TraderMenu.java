@@ -142,44 +142,42 @@ public class TraderMenu extends MenuBase {
     @Nonnull
     @Override
     public ItemStack quickMoveStack(@Nonnull Player player, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot.hasItem()) { // todo ?
-            ItemStack itemstack1 = slot.getItem();
-            itemstack = itemstack1.copy();
+        if (slot.hasItem()) {
+            ItemStack stack = slot.getItem();
+            itemStack = stack.copy();
             if (index == RESULT_SLOT) {
-                if (!this.moveItemStackTo(itemstack1, INV_SLOT_START, USE_ROW_SLOT_END, true)) {
+                if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onQuickCraft(itemstack1, itemstack);
+                slot.onQuickCraft(stack, itemStack);
                 this.playTradeSound();
-            } else if (index != 0 && index != 1) {
-                if (index >= INV_SLOT_START && index < INV_SLOT_END) {
-                    if (!this.moveItemStackTo(itemstack1, USE_ROW_SLOT_START, USE_ROW_SLOT_END, false)) {
+            } else if (index != PAYMENT1_SLOT && index != PAYMENT2_SLOT) {
+                if (index >= INV_SLOT_START && index < USE_ROW_SLOT_END) {
+                    if (!this.moveItemStackTo(stack, PAYMENT1_SLOT, RESULT_SLOT, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= USE_ROW_SLOT_START && index < USE_ROW_SLOT_END && !this.moveItemStackTo(itemstack1, INV_SLOT_START, INV_SLOT_END, false)) {
-                    return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, INV_SLOT_START, USE_ROW_SLOT_END, false)) {
+            } else if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemstack1.isEmpty()) {
+            if (stack.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
 
-            if (itemstack1.getCount() == itemstack.getCount()) {
+            if (stack.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(player, itemstack1);
+            slot.onTake(player, stack);
         }
 
-        return itemstack;
+        return itemStack;
     }
 
     private void playTradeSound() {

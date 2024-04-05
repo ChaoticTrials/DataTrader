@@ -181,7 +181,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
             return super.mobInteract(player, hand);
         }
 
-        OptionalInt optInt = player.openMenu(new SimpleMenuProvider((id, inv, player1) -> new TraderMenu(id, inv, this), Component.literal("Test")));
+        OptionalInt optInt = player.openMenu(new SimpleMenuProvider((id, inv, player1) -> new TraderMenu(id, inv, this), Component.literal("Test"))); // todo
         if (optInt.isPresent()) {
             TraderOffers offers = this.getOffers();
             if (!offers.isEmpty()) {
