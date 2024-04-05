@@ -52,6 +52,11 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     }
 
     @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new SetTargetLookingAtPlayerGoal(this, Player.class, 8, 1));
+    }
+
+    @Override
     public boolean isEffectiveAi() {
         return !this.level().isClientSide;
     }
@@ -77,6 +82,26 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         this.level().getProfiler().push("traderBrain");
         this.getBrain().tick((ServerLevel) this.level(), this);
         this.level().getProfiler().pop();
+
+        this.level().getProfiler().push("traderShowingItem");
+        if (this.getTarget() instanceof Player player) {
+            Optional<TraderOffer> offerOptional = this.getMatchingOffer(player.getMainHandItem(), ItemStack.EMPTY);
+            if (offerOptional.isPresent()) {
+                TraderOffer offer = offerOptional.get();
+                this.setItemInHand(InteractionHand.MAIN_HAND, offer.assemble());
+            } else {
+                this.removeHoldItem();
+            }
+        } else {
+            this.removeHoldItem();
+        }
+        this.level().getProfiler().pop();
+    }
+
+    private void removeHoldItem() {
+        if (!this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+            this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        }
     }
 
     @Override
@@ -185,19 +210,21 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     @Override
     protected void pickUpItem(@Nonnull ItemEntity itemEntity) {
         ItemStack stack = itemEntity.getItem();
-        for (int i = 0; i < this.getOffers().size(); i++) {
-            TraderOffer offer = this.getOffers().getTradeFor(stack, ItemStack.EMPTY, i);
-            if (offer != null) {
-                int count = offer.getCostA().getCount();
-                stack.shrink(count);
-                if (stack.isEmpty()) {
-                    itemEntity.discard();
-                }
-
-                Trader.throwItems(this, List.of(offer.assemble()));
-                return;
+        Optional<TraderOffer> offerOptional = this.getMatchingOffer(stack, ItemStack.EMPTY);
+        if (offerOptional.isPresent()) {
+            TraderOffer offer = offerOptional.get();
+            int count = offer.getCostA().getCount();
+            stack.shrink(count);
+            if (stack.isEmpty()) {
+                itemEntity.discard();
             }
+
+            Trader.throwItems(this, List.of(offer.assemble()));
         }
+    }
+
+    public Optional<TraderOffer> getMatchingOffer(ItemStack stackA, ItemStack stackB) {
+        return Optional.ofNullable(this.getOffers().getTradeFor(stackA, stackB, -1));
     }
 
     private static void throwItems(Trader trader, List<ItemStack> stacks) {
