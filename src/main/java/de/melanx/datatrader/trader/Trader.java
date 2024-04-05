@@ -1,21 +1,25 @@
 package de.melanx.datatrader.trader;
 
-import de.melanx.datatrader.DataTrader;
-import de.melanx.datatrader.ModEntities;
-import de.melanx.datatrader.ModEntityDataSerializers;
-import de.melanx.datatrader.ModItems;
+import com.google.common.collect.ImmutableList;
+import de.melanx.datatrader.*;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Npc;
 import net.minecraft.world.entity.npc.Villager;
@@ -23,10 +27,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 public class Trader extends PathfinderMob implements Npc, Trade {
@@ -42,6 +49,39 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.newDataTrader, Villager.createAttributes().build());
+    }
+
+    @Override
+    public boolean isEffectiveAi() {
+        return !this.level().isClientSide;
+    }
+
+    @Nonnull
+    @Override
+    public Brain<Trader> getBrain() {
+        //noinspection unchecked
+        return (Brain<Trader>) super.getBrain();
+    }
+
+    @Nonnull
+    @Override
+    protected Brain.Provider<?> brainProvider() {
+        return Brain.provider(
+                ImmutableList.of(MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM),
+                ImmutableList.of(SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS)
+        );
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        this.level().getProfiler().push("traderBrain");
+        this.getBrain().tick((ServerLevel) this.level(), this);
+        this.level().getProfiler().pop();
+    }
+
+    @Override
+    public boolean canPickUpLoot() {
+        return TraderConfig.pickupItems;
     }
 
     @Override
@@ -139,14 +179,58 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     @Override
     public SpawnGroupData finalizeSpawn(@Nonnull ServerLevelAccessor level, @Nonnull DifficultyInstance difficulty, @Nonnull MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
         this.setOfferId(INTERNAL_OFFER);
-        //noinspection OverrideOnly
         return super.finalizeSpawn(level, difficulty, reason, spawnData, dataTag);
     }
 
     @Override
     protected void pickUpItem(@Nonnull ItemEntity itemEntity) {
-        // todo handle first matching trade
-        super.pickUpItem(itemEntity);
+        ItemStack stack = itemEntity.getItem();
+        for (int i = 0; i < this.getOffers().size(); i++) {
+            TraderOffer offer = this.getOffers().getTradeFor(stack, ItemStack.EMPTY, i);
+            if (offer != null) {
+                int count = offer.getCostA().getCount();
+                stack.shrink(count);
+                if (stack.isEmpty()) {
+                    itemEntity.discard();
+                }
+
+                Trader.throwItems(this, List.of(offer.assemble()));
+                return;
+            }
+        }
+    }
+
+    private static void throwItems(Trader trader, List<ItemStack> stacks) {
+        Optional<Player> player = trader.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER);
+        if (player.isPresent()) {
+            Trader.throwItemsTowardPlayer(trader, player.get(), stacks);
+        } else {
+            Trader.throwItemsTowardRandomPos(trader, stacks);
+        }
+    }
+
+    private static void throwItemsTowardRandomPos(Trader trader, List<ItemStack> stacks) {
+        Trader.throwItemsTowardPos(trader, stacks, Trader.getRandomNearbyPos(trader));
+    }
+
+    private static void throwItemsTowardPlayer(Trader trader, Player player, List<ItemStack> stacks) {
+        Trader.throwItemsTowardPos(trader, stacks, player.position());
+    }
+
+    private static void throwItemsTowardPos(Trader trader, List<ItemStack> stacks, Vec3 pos) {
+        if (!stacks.isEmpty()) {
+            trader.swing(InteractionHand.OFF_HAND);
+
+            for (ItemStack stack : stacks) {
+                BehaviorUtils.throwItem(trader, stack, pos.add(0.0D, 1.0D, 0.0D));
+            }
+        }
+
+    }
+
+    private static Vec3 getRandomNearbyPos(Trader trader) {
+        Vec3 pos = LandRandomPos.getPos(trader, 4, 2);
+        return pos == null ? trader.position() : pos;
     }
 
     @Override
