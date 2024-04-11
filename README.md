@@ -67,3 +67,7 @@ For a normal trader, I recommend setting `NoAI` to `true`.
 
 You can also summon a trader with a specific trading table by using the
 command `/datatrader summon ~ ~ ~ <offer_id> <NoAI>`
+
+### Setting custom skin overlay
+Just put a texture to `<modid>:textures/entity/trader/<offer_id path>.png`. This texture should be something like the
+profession overlay texture, e.g. `minecraft:textures/entity/villager/profession/cleric.png`.

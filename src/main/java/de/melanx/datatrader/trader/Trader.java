@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +58,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 
     @Override
     public boolean isEffectiveAi() {
+        //noinspection resource
         return !this.level().isClientSide;
     }
 
@@ -157,7 +159,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 //            ModCriteriaTriggers.TRADE.trigger(serverPlayer, this, offer.getResult()); // todo own advancement trigger
         }
 
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new TradeWithTraderEvent(player, offer, this));
+        MinecraftForge.EVENT_BUS.post(new TradeWithTraderEvent(player, offer, this));
     }
 
     private void rewardTradeXp(TraderOffer offer) {
@@ -276,5 +278,10 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         } catch (ResourceLocationException e) {
             this.offerId = null;
         }
+    }
+
+    public ResourceLocation getSkinLocation() {
+        ResourceLocation offerId = this.getOfferId();
+        return offerId == INTERNAL_OFFER ? null : new ResourceLocation(offerId.getNamespace(), "textures/entity/trader/" + offerId.getPath() + ".png");
     }
 }

@@ -32,7 +32,6 @@ public class TraderMenu extends MenuBase {
 
     public TraderMenu(int containerId, Inventory inventory, FriendlyByteBuf buf) {
         this(containerId, inventory);
-//        this.setOffers(new TraderOffers(buf.readNbt()));
     }
 
     public TraderMenu(int containderId, Inventory inventory) {
