@@ -274,7 +274,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         try {
-            this.offerId = new ResourceLocation(tag.getString("OfferId"));
+            this.setOfferId(new ResourceLocation(tag.getString("OfferId")));
         } catch (ResourceLocationException e) {
             this.offerId = null;
         }
