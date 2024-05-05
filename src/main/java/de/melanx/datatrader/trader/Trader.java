@@ -58,7 +58,6 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 
     @Override
     public boolean isEffectiveAi() {
-        //noinspection resource
         return !this.level().isClientSide;
     }
 

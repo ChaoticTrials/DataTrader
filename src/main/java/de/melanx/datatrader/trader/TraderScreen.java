@@ -228,9 +228,9 @@ public class TraderScreen extends AbstractContainerScreen<TraderMenu> {
         private ListEntryGetter<ItemStack> costB;
 
         public EntryCycler(TraderOffer.ItemStackCollection costA, TraderOffer.ItemStackCollection costB) {
-            this.costA = new ListEntryGetter<>(costA.getItems(), 60);
+            this.costA = new ListEntryGetter<>(costA.getItems(), 30);
             if (!costB.isEmpty()) {
-                this.costB = new ListEntryGetter<>(costB.getItems(), 60);
+                this.costB = new ListEntryGetter<>(costB.getItems(), 30);
             }
         }
 
