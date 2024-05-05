@@ -61,6 +61,11 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         return !this.level().isClientSide;
     }
 
+    @Override
+    public void push(@Nonnull Entity entity) {
+        super.push(entity);
+    }
+
     @Nonnull
     @Override
     public Brain<Trader> getBrain() {
@@ -193,6 +198,11 @@ public class Trader extends PathfinderMob implements Npc, Trade {
         }
 
         return super.mobInteract(player, hand);
+    }
+
+    @Override
+    public boolean isPushable() {
+        return !this.isNoAi() && super.isPushable();
     }
 
     @Override
