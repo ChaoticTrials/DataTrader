@@ -40,7 +40,7 @@ public class TraderOffer {
     private final LazyValue<ItemStackCollection> costB;
     private final ItemStack result;
     private boolean rewardExp = true;
-    private int xp = 1;
+    private int xp = 0;
 
     public TraderOffer(CompoundTag compoundTag) {
         this.costA = new LazyValue<>(() -> TraderOffer.getItemStackCollection("buy", compoundTag));
@@ -62,7 +62,7 @@ public class TraderOffer {
             this.rewardExp = GsonHelper.getAsBoolean(json, "rewardExp", true);
         }
         if (json.has("xp")) {
-            this.xp = GsonHelper.getAsInt(json, "xp", 1);
+            this.xp = GsonHelper.getAsInt(json, "xp", 0);
         }
     }
 
