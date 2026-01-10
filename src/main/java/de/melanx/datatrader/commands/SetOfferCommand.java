@@ -36,7 +36,7 @@ public class SetOfferCommand {
         }
 
         trader.setOfferId(offerId);
-        context.getSource().sendSuccess(() -> Component.translatable("command.datatrader.setoffer.success", offerId), true);
+        context.getSource().sendSuccess(() -> Component.translatable("command.datatrader.setoffer.success", offerId.toString()), true);
         return 1;
     }
 }

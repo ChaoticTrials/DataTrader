@@ -1,0 +1,30 @@
+{
+  "Offers": [
+    {
+      "buy": {
+        "count": 1,
+        "items": {
+          "item": "minecraft:wooden_pickaxe"
+        }
+      },
+      "buyB": {
+        "count": 3,
+        "items": {
+          "tag": "c:gems/diamond"
+        }
+      },
+      "sell": {
+        "components": {
+          "minecraft:enchantments": {
+            "levels": {
+              "minecraft:efficiency": 2,
+              "minecraft:unbreaking": 10
+            }
+          }
+        },
+        "count": 1,
+        "id": "minecraft:diamond_pickaxe"
+      }
+    }
+  ]
+}

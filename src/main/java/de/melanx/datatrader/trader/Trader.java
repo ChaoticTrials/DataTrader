@@ -1,7 +1,12 @@
 package de.melanx.datatrader.trader;
 
 import com.google.common.collect.ImmutableList;
-import de.melanx.datatrader.*;
+import de.melanx.datatrader.DataTrader;
+import de.melanx.datatrader.TraderConfig;
+import de.melanx.datatrader.registration.ModEntities;
+import de.melanx.datatrader.registration.ModEntityDataSerializers;
+import de.melanx.datatrader.registration.ModItems;
+import de.melanx.datatrader.registration.ModMenus;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -12,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -27,14 +31,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 public class Trader extends PathfinderMob implements Npc, Trade {
 
@@ -48,7 +51,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     }
 
     public static void registerAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.newDataTrader, Villager.createAttributes().build());
+        event.put(ModEntities.dataTrader, Villager.createAttributes().build());
     }
 
     @Override
@@ -115,9 +118,9 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TRADER_OFFERS_ID, INTERNAL_OFFER);
+    protected void defineSynchedData(@Nonnull SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TRADER_OFFERS_ID, INTERNAL_OFFER);
     }
 
     public void setOfferId(ResourceLocation location) {
@@ -163,7 +166,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 //            ModCriteriaTriggers.TRADE.trigger(serverPlayer, this, offer.getResult()); // todo own advancement trigger
         }
 
-        MinecraftForge.EVENT_BUS.post(new TradeWithTraderEvent(player, offer, this));
+        NeoForge.EVENT_BUS.post(new TradeWithTraderEvent(player, offer, this));
     }
 
     private void rewardTradeXp(TraderOffer offer) {
@@ -182,19 +185,16 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     @Override
     protected InteractionResult mobInteract(@Nonnull Player player, @Nonnull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (stack.is(ModItems.traderSpawnEgg) || !this.isAlive() || player.isSecondaryUseActive()) {
+        if (stack.is(ModItems.traderSpawnEgg) || !this.isAlive() || player.isSecondaryUseActive() || player.level().isClientSide) {
             return super.mobInteract(player, hand);
         }
 
-        //noinspection DataFlowIssue
-        OptionalInt optInt = player.openMenu(new SimpleMenuProvider((id, inv, player1) -> new TraderMenu(id, inv, this), this.hasCustomName() ? this.getCustomName() : this.getDisplayName()));
-        if (optInt.isPresent()) {
-            TraderOffers offers = this.getOffers();
-            if (!offers.isEmpty()) {
-                TraderMenu menu = (TraderMenu) player.containerMenu;
-                menu.setOffers(DataTrader.getInstance().getOffers().getForId(this.getOfferId()));
-                DataTrader.getNetwork().syncTrades(player, menu.containerId, offers);
-            }
+        ModMenus.traderMenu.open((ServerPlayer) player, this.hasCustomName() ? this.getCustomName() : this.getDisplayName(), this.getId());
+        TraderOffers offers = this.getOffers();
+        if (!offers.isEmpty()) {
+            TraderMenu menu = (TraderMenu) player.containerMenu;
+            menu.setOffers(DataTrader.getInstance().getOffers().getForId(this.getOfferId()));
+            DataTrader.getNetwork().syncTrades(player, menu.containerId, offers);
         }
 
         return super.mobInteract(player, hand);
@@ -213,9 +213,10 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     @SuppressWarnings("deprecation")
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(@Nonnull ServerLevelAccessor level, @Nonnull DifficultyInstance difficulty, @Nonnull MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
+    public SpawnGroupData finalizeSpawn(@Nonnull ServerLevelAccessor level, @Nonnull DifficultyInstance difficulty, @Nonnull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         this.setOfferId(INTERNAL_OFFER);
-        return super.finalizeSpawn(level, difficulty, reason, spawnData, dataTag);
+
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     @Override
@@ -256,18 +257,20 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     }
 
     private static void throwItemsTowardPos(Trader trader, List<ItemStack> stacks, Vec3 pos) {
-        if (!stacks.isEmpty()) {
-            trader.swing(InteractionHand.OFF_HAND);
-
-            for (ItemStack stack : stacks) {
-                BehaviorUtils.throwItem(trader, stack, pos.add(0.0D, 1.0D, 0.0D));
-            }
+        if (stacks.isEmpty()) {
+            return;
         }
 
+        trader.swing(InteractionHand.OFF_HAND);
+
+        for (ItemStack stack : stacks) {
+            BehaviorUtils.throwItem(trader, stack, pos.add(0.0D, 1.0D, 0.0D));
+        }
     }
 
     private static Vec3 getRandomNearbyPos(Trader trader) {
         Vec3 pos = LandRandomPos.getPos(trader, 4, 2);
+
         return pos == null ? trader.position() : pos;
     }
 
@@ -283,7 +286,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         try {
-            this.setOfferId(new ResourceLocation(tag.getString("OfferId")));
+            this.setOfferId(ResourceLocation.tryParse(tag.getString("OfferId")));
         } catch (ResourceLocationException e) {
             this.offerId = null;
         }
@@ -291,6 +294,7 @@ public class Trader extends PathfinderMob implements Npc, Trade {
 
     public ResourceLocation getSkinLocation() {
         ResourceLocation offerId = this.getOfferId();
-        return offerId == INTERNAL_OFFER ? null : new ResourceLocation(offerId.getNamespace(), "textures/entity/trader/" + offerId.getPath() + ".png");
+
+        return offerId == INTERNAL_OFFER ? null : ResourceLocation.tryBuild(offerId.getNamespace(), "textures/entity/trader/" + offerId.getPath() + ".png");
     }
 }

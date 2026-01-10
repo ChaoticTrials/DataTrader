@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import de.melanx.datatrader.DataTrader;
-import de.melanx.datatrader.ModEntities;
+import de.melanx.datatrader.registration.ModEntities;
 import de.melanx.datatrader.trader.Trader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,15 +38,15 @@ public class SummonCommand {
         }
 
         ServerLevel level = context.getSource().getLevel();
-        Trader trader = ModEntities.newDataTrader.create(level);
+        Trader trader = ModEntities.dataTrader.create(level);
         //noinspection DataFlowIssue
-        trader.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos.x, pos.y, pos.z)), MobSpawnType.BREEDING, null, null);
+        trader.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos.x, pos.y, pos.z)), MobSpawnType.BREEDING, null);
         trader.moveTo(pos.x, pos.y, pos.z, 330, 0);
         trader.setNoAi(noai);
         level.addFreshEntity(trader);
         trader.setOfferId(offerId);
 
-        context.getSource().sendSuccess(() -> Component.translatable("command.datatrader.setoffer.success", offerId), true);
+        context.getSource().sendSuccess(() -> Component.translatable("command.datatrader.setoffer.success", offerId.toString()), true);
         return 1;
     }
 }

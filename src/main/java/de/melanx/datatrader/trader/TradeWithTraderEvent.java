@@ -1,15 +1,13 @@
 package de.melanx.datatrader.trader;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
  * This event is fired when a player trades with a {@link Trader}.
  *
- * <p>This event is not {@linkplain net.minecraftforge.eventbus.api.Cancelable cancellable}, and does not {@linkplain net.minecraftforge.eventbus.api.Event.HasResult have a result}.</p>
- *
- * <p>This event is fired on the {@linkplain net.minecraftforge.common.MinecraftForge#EVENT_BUS main Forge event bus},
- * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.</p>
+ * <p>This event is fired on the {@linkplain net.neoforged.neoforge.common.NeoForge#EVENT_BUS main NeoForge event bus},
+ * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
  */
 public class TradeWithTraderEvent extends PlayerEvent {
 

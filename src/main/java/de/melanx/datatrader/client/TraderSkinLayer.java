@@ -1,6 +1,7 @@
-package de.melanx.datatrader.trader;
+package de.melanx.datatrader.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.melanx.datatrader.trader.Trader;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.VillagerHeadModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -26,7 +27,7 @@ public class TraderSkinLayer<T extends Trader, M extends EntityModel<T> & Villag
 
             M model = this.getParentModel();
             model.hatVisible(true);
-            RenderLayer.renderColoredCutoutModel(model, skinLocation, poseStack, buffer, packedLight, trader, 1.0F, 1.0F, 1.0F);
+            RenderLayer.renderColoredCutoutModel(model, skinLocation, poseStack, buffer, packedLight, trader, -1);
         }
     }
 }

@@ -1,5 +1,6 @@
 package de.melanx.datatrader.trader;
 
+import de.melanx.datatrader.client.ClientSideTrader;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -85,7 +86,11 @@ public class TraderContainer implements Container {
 
     @Override
     public boolean stillValid(@Nonnull Player player) {
-        return player.distanceTo((Entity) this.trader) <= player.getEntityReach();
+        if (this.trader instanceof ClientSideTrader) {
+            return true;
+        }
+
+        return player.distanceTo((Entity) this.trader) <= player.entityInteractionRange();
     }
 
     @Override

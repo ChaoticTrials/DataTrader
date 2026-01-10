@@ -1,11 +1,15 @@
 {
   "entity.datatrader.data_trader": "Händler",
   "entity.datatrader.data_trader.datatrader.trader": "Händler",
-  "entity.minecraft.data_trader.datatrader.trader": "Händler",
-  "entity.minecraft.villager.datatrader.trader": "Händler",
+
   "item.datatrader.trader_spawn_egg": "Händler-Spawn-Ei",
 
+  "stat.datatrader.traded_with_trader": "Mit Händler getauscht",
+
+  "tooltip.datatrader.tag_ingredient": "Tag Zutat",
+  "tooltip.datatrader.no_ai": "Keine KI",
+
   "command.datatrader.setoffer.wrong_entity": "Falscher Entitätstyp, funktioniert nur mit Händlern.",
-  "command.datatrader.setoffer.wrong_id": "Dieser Angebots-ID existiert nicht.",
-  "command.datatrader.setoffer.success": "Erfolgreich die Angebots-ID des Händlers auf %s gesetzt"
+  "command.datatrader.setoffer.wrong_id": "Diese Angebots-ID existiert nicht.",
+  "command.datatrader.setoffer.success": "Erfolgreich die Angebots-ID des Händlers auf \"%s\" gesetzt"
 }
