@@ -8,7 +8,7 @@ buildscript {
 }
 
 apply from: 'https://moddingx.github.io/ModUtils/v5/mod.gradle'
-apply plugin: 'org.moddingx.modgradle.cursedep'
+
 apply plugin: 'maven-publish'
 mod['version'] = getVersion(mod.minecraft + "-" + mod.base_version, new URL(mod.remote_maven + "/" + group.replace('.', '/') + "/" + name + "/maven-metadata.xml"))
 project.version = mod.version
